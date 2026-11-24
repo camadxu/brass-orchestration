@@ -1,46 +1,36 @@
-# Reference corpus (local)
+# Локальный репертуар для анализа
 
-Root: `/home/uui33/orchestration/reference` — 44 MB, 59 PDFs, all public domain,
-collected 2026-10-30 with `scripts/imslp_fetch.py`.
+Корень: `ORCH_LIBRARY`, иначе `~/Documents/orchestration-library`. Пофайловые описания, состав, издание и основания — `scores/CATALOG.md`; текущая целостность — `library_catalog.py --check`.
 
-## Study scores: brass ensemble
+Локальная сверка 24.11.2026: в scores 68 исходных файлов — 65 PDF и 3 ZIP. Это не 68 брэсс-партитур: встречаются отдельные партии, фрагменты, переложения для струнных, аккордеонов, блокфлейт, фортепиано и лютневая табулатура. Состав нельзя вывести только из папки композитора.
 
-- `imslp/ewald_op5/` — Victor Ewald, Brass Quintet No.1 Op.5: 25 files, several
-  editions (Sibley scans of the original 5 parts + PMLP typeset score and parts).
-  The oldest and cleanest example of functional 5-voice brass writing.
-- `imslp/ewald_op6/` — Quintet No.2 Op.6, 11 files (typeset score + 5 parts,
-  hosted on IMSLP-EU).
-- `imslp/ewald_op7/` — Quintet No.3 Op.7, 5 files.
-- `gabrieli/` — Giovanni Gabrieli, Canzon septimi toni a 8 (brass octet full score
-  + parts) and Canzon septimi et octavi toni a 12, Ch.182 (score + parts).
-  Study these for antiphonal cori spezzati placement and for how a 12-voice
-  texture is thinned to 8 without losing the harmony.
+## Материал
 
-## Study scores: orchestral brass
+- `scores/ewald_op5/` — Эвальд, квинтет №1 op.5, разные редакции/переложения и II часть отдельно. Изучать функциональное пятиголосие, отличая современный состав от исторического. Проверить титул каждого файла: есть небрэссовые переложения.
+- `scores/ewald_op6/` — квинтет №2 op.6, наборы партий разных редакций. Файл с No.6 в имени на первой странице назван No.2 op.6; имя не переименовано.
+- `scores/ewald_op7/` — квинтет №3 op.7: не выводить номер партии из диапазона страниц в имени без просмотра.
+- `scores/gabrieli/` — антифонное письмо, Canzon septimi toni и septimi et octavi toni; не все файлы для меди. Для распределения функций сравнивать редакции с их действительным составом.
+- `scores/wagner_tannhauser/` — увертюра «Тангейзера», оркестровый контекст медной группы; изучать развитие кульминаций, плотность и отдых.
 
-- `wagner_tannhauser/PMLP21243-Wagner_Tannh_..._overture.pdf` — Tannhäuser
-  overture, full score, 22 pp. Horns 1-4, trumpets 1-3, trombones 1-3, tuba;
-  check how Wagner builds the climax without letting the trumpets run high for
-  long, and how horn 1-4 pair against the trombones.
+## Книги
 
-## Treatises
+- `books/rimsky/`, `books/anisimov/`, `books/malter/`, `books/blum/` — PDF, OCR, индексы; приоритеты в books/manifest.json.
+- `books/rimsky-principles/` — главы и текст Римского-Корсакова; язык проверять у конкретного PDF.
+- `books/berlioz/berlioz_treatise_djvu.txt` — сырой OCR, PDF здесь нет.
+- `books/milyaev/` — тромбонная техника и конспект исполнительского аппарата.
+- `books/online-resources/` — карточки и текстовые извлечения. Исторический manifest не подтверждает локальное наличие PDF/HTML; сначала README.
 
-- `rimsky_principles/` — Rimsky-Korsakov, Principles of Orchestration, per-chapter
-  English PDFs (Ch.1-4, 6, plus complete text). Chapter 2 (melody) and Chapter 3
-  (harmony) are the ones to re-read before any arrangement; the string/woodwind
-  chapters still teach doubling logic.
-- `berlioz_treatise_djvu.txt` — Berlioz, A Treatise on Modern Instrumentation and
-  Orchestration (Novello translation, OCR text, 637 KB). Searchable prose on
-  instrument character; OCR errors are frequent, quote with care.
+## Удалённая историческая копия
 
-## How to extend
+`uui:/home/uui33/orchestration/reference` — историческое расположение. **uui не сверялось 24.11.2026:** штатный reverse tunnel вернул Connection refused. Числа 59/66/75 из старых описаний не выдавать за текущий результат и не утверждать побайтовое равенство локальной копии.
 
-```
-python3 scripts/imslp_fetch.py --list 'https://imslp.org/wiki/<Work>_(<Composer>)'
-python3 scripts/imslp_fetch.py URL --get score --out DIR
-python3 scripts/imslp_fetch.py URL --get all --match '^Chapter' --out DIR
-python3 scripts/imslp_fetch.py URL --get all --id 461955 --out DIR
+## Пополнение
+
+```bash
+python scripts/imslp_fetch.py 'https://imslp.org/wiki/<Work>_(<Composer>)' --list
+python scripts/imslp_fetch.py URL --get score --out DIR
+python scripts/imslp_fetch.py URL --get all --match '^Chapter' --out DIR
+python scripts/imslp_fetch.py URL --get all --id 461955 --out DIR
 ```
 
-Only fetch works that are public domain in the relevant jurisdiction, and say in
-any deliverable which edition the arrangement was based on.
+Проверить права конкретного издания и юрисдикцию до загрузки/распространения. В результате назвать редакцию, а не просто «из IMSLP». После принятого пополнения обновить catalog, ручные метаданные и Markdown, затем повторить --check.
