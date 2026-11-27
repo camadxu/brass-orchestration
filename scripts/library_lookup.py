@@ -15,10 +15,15 @@ import sys
 from pathlib import Path
 
 BOOKS = {
-    "rimsky": ("books/rimsky/rimsky.pages.json", "Римский-Корсаков — Основы оркестровки"),
-    "anisimov": ("books/anisimov/anisimov.pages.json", "Анисимов — Практическое пособие по инструментовке"),
-    "malter": ("books/malter/malter.pages.json", "Мальтер — Таблицы по инструментоведению"),
-    "blum": ("books/blum/blum.pages.json", "Блюм — Краткий курс инструментоведения"),
+    "rimsky": ("books/rimsky/rimsky.pages.json", "Римский-Корсаков — Основы оркестровки", "books/rimsky/rimsky.pdf"),
+    "anisimov": ("books/anisimov/anisimov.pages.json", "Анисимов — Практическое пособие по инструментовке", "books/anisimov/anisimov.pdf"),
+    "malter": ("books/malter/malter.pages.json", "Мальтер — Таблицы по инструментоведению", "books/malter/malter.pdf"),
+    "blum": ("books/blum/blum.pages.json", "Блюм — Краткий курс инструментоведения", "books/blum/blum.pdf"),
+    "forsyth": ("books/forsyth/forsyth.pages.json", "Cecil Forsyth — Orchestration (1914)", "books/forsyth/PMLP219239-Forsyth-Orchestration1914.pdf"),
+    "kling": ("books/kling/kling.pages.json", "Kling/Saenger — Modern Orchestration and Instrumentation (1905)", "books/kling/modernorchestrat00klin.pdf"),
+    "widor": ("books/widor/widor.pages.json", "Widor/Suddard — The Technique of the Modern Orchestra (1906)", "books/widor/techniqueofmoder00widouoft.pdf"),
+    "prout": ("books/prout/prout.pages.json", "Prout — The Orchestra, Vol. I (1899 impression)", "books/prout/orchestra01prou.pdf"),
+    "prout-v2": ("books/prout/prout-v2.pages.json", "Prout — The Orchestra, Vol. II (1899 impression)", "books/prout/orchestra02prou.pdf"),
 }
 
 
@@ -26,18 +31,33 @@ def default_root() -> Path:
     return Path(os.environ.get("ORCH_LIBRARY", Path.home() / "Documents" / "orchestration-library"))
 
 
+def _fold_with_offsets(text: str) -> tuple[str, list[int]]:
+    """Per-character casefold with a map from each folded index to its index in text."""
+    folded: list[str] = []
+    offsets: list[int] = []
+    for i, ch in enumerate(text):
+        for part in ch.casefold():
+            folded.append(part)
+            offsets.append(i)
+    folded.append("\0")  # sentinel so any folded index past the end still maps
+    offsets.append(len(text))
+    return "".join(folded), offsets
+
+
 def find_snippets(text: str, term: str, context: int) -> list[str]:
-    folded, needle = text.casefold(), term.casefold()
+    # casefold() can change string length (ß -> ss): slice via the offset map, not folded positions.
+    folded, offsets = _fold_with_offsets(text)
+    needle = term.casefold()
     hits: list[str] = []
     pos = 0
     while len(hits) < 3:
         pos = folded.find(needle, pos)
         if pos < 0:
             break
-        left = max(0, pos - context)
-        right = min(len(text), pos + len(term) + context)
+        left = offsets[max(0, pos - context)]
+        right = offsets[min(len(offsets) - 1, pos + len(needle) + context)]
         hits.append(re.sub(r"\s+", " ", text[left:right]).strip())
-        pos += max(1, len(term))
+        pos += max(1, len(needle))
     return hits
 
 
@@ -56,7 +76,7 @@ def main() -> int:
     books = BOOKS if args.book == "all" else {args.book: BOOKS[args.book]}
     results: list[dict[str, object]] = []
     errors = 0
-    for book_id, (index_rel, title) in books.items():
+    for book_id, (index_rel, title, pdf) in books.items():
         index_path = args.root / index_rel
         if not index_path.is_file():
             print(f"Missing page index: {index_path}", file=sys.stderr)
@@ -76,7 +96,7 @@ def main() -> int:
                     "title": title,
                     "pdf_page": page.get("pdf_page"),
                     "printed_page": None,
-                    "pdf": index_rel.removesuffix(".pages.json") + ".pdf",
+                    "pdf": pdf,
                     "snippets": excerpts,
                 })
     book_order = {book: i for i, book in enumerate(BOOKS)}

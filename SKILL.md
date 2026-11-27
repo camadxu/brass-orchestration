@@ -1,7 +1,8 @@
 ---
 name: brass-orchestration
-description: "Use for brass orchestration and symphonic arranging."
-version: 2.7.0
+description: "Симфонические переложения и аранжировки для медных (brass ensemble, духовой оркестр, тромбонный хор): проверка партитур, ритм и купюры, выпуск партий, MusicXML/MXL/MSCX, MuseScore. Не для оркестровки программных агентов. Use for brass ensemble and wind band arranging/transcribing, score checking, MusicXML/MuseScore editing and part extraction; not for software-agent orchestration."
+when_to_use: "Нотная задача: переложение или аранжировка для медных, духового оркестра, тромбонного хора; инструментовка, регистры, дыхание, баланс; проверка партитуры по исходнику; такт не сходится, нота подписана не тем значением, купюры; точечная правка MusicXML/MXL, добавление инструмента в MSCX/MSCZ; импорт в MuseScore и печать; выпуск партий; книги и репертуар по оркестровке."
+version: 2.8.0
 metadata:
   hermes:
     tags: [music, brass, orchestration, arrangement, symphonic score, transcription, trumpet, horn, trombone, tuba, percussion, brass ensemble, musicxml, musescore, партитура, симфоническая партитура, оркестровка, переложение, аранжировка, труба, валторна, тромбон, туба, ударные, медные духовые]
@@ -34,7 +35,7 @@ LIB="${ORCH_LIBRARY:-C:/Users/IAI/Documents/orchestration-library}"
 "$PY" "$SK/scripts/library_lookup.py" 'тромбон' --book rimsky --root "$LIB" --limit 20
 ```
 
-`library_lookup.py` принимает `--book rimsky|anisimov|malter|blum|all`, `--json`, `--limit`, `--context`. Старый OCR шумный: пробуй несколько словоформ, окончаний и корней, например `тромбон`, `тромбоновъ`, `тромбонъ`; один пустой запрос не доказывает отсутствия темы. `--check` проверяет комплектность и хеши, не OCR и не музыкальную корректность.
+`library_lookup.py` принимает `--book rimsky|anisimov|malter|blum|forsyth|kling|widor|prout|prout-v2|all`, `--json`, `--limit`, `--context`. Старый OCR шумный: пробуй несколько словоформ, окончаний и корней, например `тромбон`, `тромбоновъ`, `тромбонъ`; один пустой запрос не доказывает отсутствия темы. `--check` проверяет комплектность и хеши, не OCR и не музыкальную корректность.
 
 ## Локальная карта источников
 
