@@ -21,6 +21,14 @@ the answer.
   by the command scanner before it runs. `scripts/check_delivery.py` covers the
   integrity pass; keep one-off probes next to it as files.
 
+## Structural map before pitch comparison
+
+Before extracting a selected MusicXML range, traverse each part from its beginning and carry forward active `divisions`, time signature and transposition, updating attributes before filtering measures; these attributes are inherited, so initializing at the first selected bar can corrupt onset, duration and concert-pitch comparisons. Process `backup`, `forward`, chords and grace notes when building the timeline, and check representative multi-voice bars explicitly before trusting a match score.
+
+Before interpreting pitch-coverage metrics, build a compact source-to-arrangement map of meter changes, rehearsal marks, tempo directions, and bar-number anchors. Do not trust a filename such as “bars 1–59” or identical-looking measure numbers as proof of alignment; establish at least two distinctive musical anchors with stable timing and transposition. As a diagnostic only, compare sounding pitch-class sets on a fine time grid while sweeping possible global mod-12 transpositions, then inspect per-bar matches and deviations; pitch-class coverage cannot establish exact spelling, voice provenance, or editorial intent. Confirm a proposed map with distinctive rhythm/line contours and structural anchors, not its aggregate score alone. Compare rehearsal marks as a separate textual layer: a missing, shifted, or renumbered mark is an editorial discrepancy and a cross-check on alignment, but do not automatically correct it or treat it alone as proof of a shifted map. Treat absence of `<metronome>` independently from absence of tempo guidance: inspect `<words>`, `<sound tempo>`, and visible score text before declaring tempo information omitted.
+
+**Pitfall:** Map rehearsal numbers, meter changes, and tempo directions before trusting same-numbered bars — MusicXML pitch comparators cannot detect shifted or omitted editorial landmarks.
+
 ## The two metrics that decide
 
 1. **Added pitch classes per bar** (section 2 of the script): the arrangement

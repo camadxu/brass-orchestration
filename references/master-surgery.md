@@ -15,7 +15,11 @@ Their report often names the build (`сборка 13`), a hash prefix and the de
 archive. A stale cached copy from an earlier build is the usual reason an edit
 lands in the wrong file.
 
-## 2. Anchored string surgery
+## 2. Instrument substitution without changing the music
+
+When an approved edit replaces an instrument on existing staves, first distinguish an identity/name change from deleting and redistributing the lines. List the exact parts and metadata to change, resolve duplicate names/numbering across the whole section, and select the destination clef by the intended notation convention. In MusicXML, changing the part name or clef does not move `<pitch>` values; `<transpose>` is a separate sounding-pitch instruction. Preserve all pitch events unless the owner separately approves transposition or octave displacement. If the new instrument makes some passages unusually high or low, report those passages for a separate decision rather than silently rewriting them. Verify after the edit that each part's event sequence (pitch, onset, duration, ties) is unchanged, and render the affected pages to inspect clefs, labels, ledger lines, and collisions.
+
+## 3. Anchored string surgery
 
 Delivered masters mix formatting: some parts are pretty-printed, others are one
 2 MB line. Parse-and-reserialize would reflow the whole document, so the diff stops
@@ -43,7 +47,7 @@ out = src[:i] + seg.replace(old, new) + src[j:]
 - Verify uniqueness with `count(...) == 1` before replacing; a silent 0-or-2 match is
   how the wrong bar gets edited.
 
-## 3. Rebuild the `.mxl`
+## 4. Rebuild the `.mxl`
 
 `.mxl` is a zip whose first entry must be an uncompressed `mimetype`:
 
@@ -63,7 +67,7 @@ A container that no app can open is not a delivery. Compare
 `unzip -p fixed.mxl score.musicxml | sha256sum` with the loose file: they must be
 identical.
 
-## 4. Verification pass (run it, quote it)
+## 5. Verification pass (run it, quote it)
 
 For each part, build concert-pitch events per bar (`compare.py::concert` does this)
 and assert:
@@ -77,7 +81,7 @@ and assert:
 A useful summary line to report: `measures changed (music-level): [('P10', 98)]`,
 `notes 7416 → 7416`, `words before {97,110,286} → after {97,110,286,342}`.
 
-## 5. Show the two bars
+## 6. Show the two bars
 
 Renders beat prose for a notation fix. Split the touched part out, render both
 versions at the same dpi, crop the same box and stack them:
@@ -93,7 +97,7 @@ Then crop identical rectangles (`Image.crop`) and stack. Render both at the same
 dpi — stacking a 130-dpi crop against a 150-dpi one produces a comparison nobody
 can read. Attach the result; label the halves "до / после" in the caption.
 
-## 6. Delivering
+## 7. Delivering
 
 - ASCII filenames only (`Shostakovich10-II-build13-fixed.musicxml`), both formats,
   plus the `sha256` of each in the message so the owner can verify by hash.
